@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VILLASILVANIA — Rotación Salvavidas</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,600;1,300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="bg-ocean"></div>
+    <div class="waves-wrap">
+      <div class="wave"></div>
+      <div class="wave"></div>
+    </div>
+    <div class="app">
+      <div id="login-screen">
+        <div class="login-card">
+          <div class="login-logo">VILLASILVANIA</div>
+          <div class="login-sub">Sistema de Rotación · Salvavidas</div>
+          <label for="pwd-input">Palabra clave</label>
+          <input
+            type="password"
+            id="pwd-input"
+            placeholder="••••••••••••••"
+            autocomplete="off"
+          />
+          <div class="login-err" id="login-err"></div>
+          <button class="btn-primary" onclick="doLogin()">🌊 Ingresar</button>
+        </div>
+      </div>
+      <div id="main-app">
+        <div class="header">
+          <div>
+            <div class="header-title">VILLA<span>SILVANIA</span></div>
+            <div class="header-sub">Rotación de Salvavidas · Piscinas</div>
+          </div>
+          <button class="btn-logout" onclick="doLogout()">Cerrar sesión</button>
+        </div>
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('rotacion', this)">
+            🌊 Rotación del Día
+          </button>
+          <button class="tab-btn" onclick="switchTab('historial', this)">
+            📋 Historial
+          </button>
+          <button class="tab-btn" onclick="switchTab('editar', this)">
+            ✏️ Editar Rotación
+          </button>
+          <button class="tab-btn" onclick="switchTab('config', this)">
+            ⚙️ Configuración
+          </button>
+        </div>
+        <div class="section active" id="tab-rotacion">
+          <div class="date-nav">
+            <label>Seleccionar día</label>
+            <input type="date" id="date-picker" onchange="loadDay()" />
+            <span class="day-badge" id="day-label">—</span>
+          </div>
+          <div class="rotation-legend">
+            <div>
+              <h4>Orden de rotación</h4>
+              <div class="rotation-flow">
+                <span class="rf-item">⛵ Vela</span>
+                <span class="rf-arrow">→</span>
+                <span class="rf-item">🏊 Parque Azul</span>
+                <span class="rf-arrow">→</span>
+                <span class="rf-item">🎢 Toboganes</span>
+                <span class="rf-arrow">→</span>
+                <span class="rf-item">🐬 Delfines</span>
+                <span class="rf-arrow">→</span>
+                <span class="rf-item">⛵ Vela</span>
+              </div>
+            </div>
+          </div>
+          <div class="pools-grid">
+            <div
+              class="pool-card"
+              data-pool="vela"
+              style="animation-delay: 0.05s"
+            >
+              <div class="pool-icon">⛵</div>
+              <div class="pool-name">Vela</div>
+              <div class="guard-chip" id="chip-vela">
+                <span class="dot"></span><span id="name-vela">—</span>
+              </div>
+            </div>
+            <div
+              class="pool-card"
+              data-pool="parque"
+              style="animation-delay: 0.12s"
+            >
+              <div class="pool-icon">🏊</div>
+              <div class="pool-name">Parque Azul</div>
+              <div class="guard-chip" id="chip-parque">
+                <span class="dot"></span><span id="name-parque">—</span>
+              </div>
+            </div>
+            <div
+              class="pool-card"
+              data-pool="toboganes"
+              style="animation-delay: 0.19s"
+            >
+              <div class="pool-icon">🎢</div>
+              <div class="pool-name">Toboganes</div>
+              <div class="guard-chip" id="chip-toboganes">
+                <span class="dot"></span><span id="name-toboganes">—</span>
+              </div>
+            </div>
+            <div
+              class="pool-card"
+              data-pool="delfines"
+              style="animation-delay: 0.26s"
+            >
+              <div class="pool-icon">🐬</div>
+              <div class="pool-name">Delfines</div>
+              <div class="guard-chip" id="chip-delfines">
+                <span class="dot"></span><span id="name-delfines">—</span>
+              </div>
+            </div>
+          </div>
+          <div
+            id="no-work-msg"
+            style="
+              display: none;
+              text-align: center;
+              opacity: 0.6;
+              padding: 2rem;
+            "
+          >
+            🚫 Este día no es laborable (no es sábado, domingo ni festivo).
+          </div>
+        </div>
+        <div class="section" id="tab-historial">
+          <div class="history-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>⛵ Vela</th>
+                  <th>🏊 Parque Azul</th>
+                  <th>🎢 Toboganes</th>
+                  <th>🐬 Delfines</th>
+                </tr>
+              </thead>
+              <tbody id="history-body"></tbody>
+            </table>
+          </div>
+          <p
+            id="no-history"
+            style="
+              text-align: center;
+              opacity: 0.5;
+              padding: 2rem;
+              display: none;
+            "
+          >
+            No hay días laborables registrados aún.
+          </p>
+        </div>
+        <div class="section" id="tab-editar">
+          <div class="date-nav">
+            <label>Día a editar</label>
+            <input type="date" id="edit-date-picker" onchange="loadEditDay()" />
+            <span class="day-badge" id="edit-day-label">—</span>
+          </div>
+          <div class="edit-rotation-grid" id="edit-grid"></div>
+          <button class="btn-sec" onclick="saveEdit()">
+            💾 Guardar cambios
+          </button>
+          <button
+            class="btn-sec"
+            style="
+              background: rgba(251, 133, 0, 0.3);
+              border: 1px solid rgba(251, 133, 0, 0.4);
+              color: var(--coral);
+              box-shadow: none;
+              margin-left: 0.5rem;
+            "
+            onclick="resetEdit()"
+          >
+            ↩️ Restaurar automático
+          </button>
+        </div>
+        <div class="section" id="tab-config">
+          <div class="config-grid">
+            <div class="config-card">
+              <h3>👤 Salvavidas</h3>
+              <p style="font-size: 0.85rem; opacity: 0.6; margin-bottom: 1rem">
+                Exactamente 4 salvavidas (uno por piscina). El primero empieza
+                en Vela el primer día laborable.
+              </p>
+              <div class="guard-list" id="guard-list"></div>
+              <button class="btn-sec" onclick="saveGuards()">
+                💾 Guardar salvavidas
+              </button>
+            </div>
+            <div class="config-card">
+              <h3>📅 Festivos</h3>
+              <p style="font-size: 0.85rem; opacity: 0.6; margin-bottom: 1rem">
+                Agrega los festivos (además de sábados y domingos trabajan como
+                días laborables).
+              </p>
+              <div class="holiday-list" id="holiday-list"></div>
+              <div class="add-holiday-row">
+                <input type="date" id="new-holiday-date" />
+                <button
+                  class="btn-sec"
+                  style="margin: 0; padding: 0.5rem 1rem"
+                  onclick="addHoliday()"
+                >
+                  + Agregar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
